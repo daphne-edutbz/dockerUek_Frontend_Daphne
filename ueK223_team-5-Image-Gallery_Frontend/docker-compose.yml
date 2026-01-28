@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+  frontend:
+    restart: unless-stopped
+    image: image-gallery-frontend:latest
+    container_name: frontend
+    depends_on:
+      - backend
+    ports:
+      - 3000:80
+  backend:
+    restart: unless-stopped
+    image: image-gallery-backendend:latest
+    container_name: backend
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_PROFILES_ACTIVE: docker
+  db:
+    restart: unless-stopped
+    image: postgres:10-alpine
+    container_name: db
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
