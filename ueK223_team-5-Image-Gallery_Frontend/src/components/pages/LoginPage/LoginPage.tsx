@@ -103,8 +103,8 @@ const Login = () => {
             <Typography variant="body2" fontWeight="bold">
               Demo Login (Admin):
             </Typography>
-            <Typography variant="body2">E-Mail: admin@example.com</Typography>
             <Typography variant="body2">Passwort: 1234</Typography>
+            Admin E-Mail: admin@example.com
           </Alert>
 
             <Alert severity="success" sx={{ mb: 3 }}>
