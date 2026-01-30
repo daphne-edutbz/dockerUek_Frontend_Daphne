@@ -1,32 +1,40 @@
 version: "3.7"
 
+networks:
+  proxy:
+    external: true
+
 services:
   frontend:
-    restart: unless-stopped
     image: image-gallery-frontend:latest
     container_name: frontend
+    restart: unless-stopped
     depends_on:
       - backend
-    ports:
-      - 3000:80
-  backend:
-    restart: unless-stopped
-    image: image-gallery-backendend:latest
-    container_name: backend
-    ports:
-      - 8080:8080
+    networks:
+      - proxy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_PROFILES_ACTIVE: docker
-  db:
+      VIRTUAL_HOST: daphne.dev.noseryoung.ch
+      LETSENCRYPT_HOST: daphne.dev.noseryoung.ch
+      LETSENCRYPT_EMAIL: deine-email@example.com
+
+  backend:
+    image: image-gallery-backend:latest
+    container_name: backend
     restart: unless-stopped
+    networks:
+      - proxy
+    environment:
+      VIRTUAL_HOST: api.daphne.dev.noseryoung.ch
+      LETSENCRYPT_HOST: api.daphne.dev.noseryoung.ch
+      LETSENCRYPT_EMAIL: deine-email@example.com
+    depends_on:
+      - db
+
+  db:
     image: postgres:10-alpine
     container_name: db
-    ports:
-      - 5432:5432
+    restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
