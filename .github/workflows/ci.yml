@@ -48,3 +48,14 @@ jobs:
 
             echo "Health check..."
             curl -f https://daphne.dev.noseryoung.ch
+
+      - name: Notify Slack
+        if: success() || failure()
+        run: |
+          STATUS="✅ SUCCESS"
+          if [ "${{ job.status }}" != "success" ]; then
+          STATUS="❌ FAILED"
+          fi
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\": \"Deployment ${STATUS} for image-gallery\"}" \
+            ${{ secrets.SLACK_WEBHOOK }}
