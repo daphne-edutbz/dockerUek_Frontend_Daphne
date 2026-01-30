@@ -2,6 +2,21 @@
 FROM node:20-alpine AS builder
  # Will create a directory app and switch to that directory
 WORKDIR /app
+
+# ENABLE YARN
+RUN corepack enable
+
+COPY package.json yarn.lock ./
+COPY .env.production .
+COPY tsconfig.json .
+COPY vite.config.ts .
+COPY index.html .
+COPY ./public ./public
+COPY ./src ./src
+
+RUN yarn install --frozen-lockfile
+RUN yarn build
+
 # Copies package.json file and soruce code to /app directory
 COPY package.json .
 COPY .env.production .
