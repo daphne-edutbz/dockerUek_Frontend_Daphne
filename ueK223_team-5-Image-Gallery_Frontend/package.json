@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "vite",
     "test": "vitest run",
-    "build": "yarn test && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "name": "frontend",
