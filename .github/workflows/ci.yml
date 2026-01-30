@@ -49,7 +49,7 @@ jobs:
             echo "Health check..."
             curl -f https://daphne.dev.noseryoung.ch
 
-      - name: Notify Slack
+      - name: Slack notification
         if: success() || failure()
         run: |
           STATUS="SUCCESS ✅"
@@ -59,3 +59,10 @@ jobs:
           curl -X POST -H 'Content-type: application/json' \
             --data "{\"text\": \"Deployment ${STATUS} for image-gallery\"}" \
             ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Discord notification
+        if: success() || failure()
+        run: |
+          curl -H "Content-Type: application/json" \
+          -d '{"content": "Deployment finished successfully! ✅"}' \
+          ${{ secrets.DISCORD_WEBHOOK_URL }}
