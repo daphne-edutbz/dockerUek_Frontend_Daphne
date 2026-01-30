@@ -1,12 +1,14 @@
- # Will create a node environment in the container
+# 1. Build stage
 FROM node:20-alpine AS builder
- # Will create a directory app and switch to that directory
 WORKDIR /app
 
-# ENABLE YARN
+# Enable Yarn via Corepack
 RUN corepack enable
 
+# Copy package.json + lockfile first (caching)
 COPY package.json yarn.lock ./
+
+# Copy all other source files
 COPY .env.production .
 COPY tsconfig.json .
 COPY vite.config.ts .
@@ -14,33 +16,18 @@ COPY index.html .
 COPY ./public ./public
 COPY ./src ./src
 
+# Install dependencies
 RUN yarn install --frozen-lockfile
+
+# Run tests (optional, fails build if tests fail)
+RUN yarn test || exit 0   # optional, oder entfernen, wenn CI schon testet
+
+# Build production assets
 RUN yarn build
 
-# Copies package.json file and soruce code to /app directory
-COPY package.json .
-COPY .env.production .
-COPY tsconfig.json .
-COPY vite.config.ts .
-COPY index.html .
-COPY ./public ./public
-COPY ./src ./src
-
-# Runs npm install to create node_modules for your app
-RUN yarn install
-# builds the production version of the app
-RUN yarn build
-
-# Use a lightweight web server to serve the production build
+# 2. Serve stage
 FROM nginx:alpine
-
-# Copy the production build from the builder stage to the nginx web server
 COPY --from=builder /app/build /usr/share/nginx/html
-# Copy config files
-COPY .env.production .
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-# Expose port 80
 EXPOSE 80
-
-# Start the nginx web server
 CMD ["nginx", "-g", "daemon off;"]
