@@ -32,3 +32,21 @@ jobs:
             cd ~/image-gallery
             docker compose pull
             docker compose up -d
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          cd ~/image-gallery
+          docker compose pull
+          docker compose up -d
+
+    - name: Health Check (Frontend)
+      run: |
+        echo "Waiting for application..."
+        sleep 15
+        curl -f https://daphne.dev.noseryoung.ch
+
+

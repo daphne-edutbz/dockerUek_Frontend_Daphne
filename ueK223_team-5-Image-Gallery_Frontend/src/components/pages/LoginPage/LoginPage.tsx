@@ -105,9 +105,7 @@ const Login = () => {
           <Typography variant="body2" fontWeight="bold">
             Demo Login (Admin):
           </Typography>
-          <Typography variant="body2">
-            Admin E-Mail: admin@example.com
-          </Typography>
+          <Typography variant="body2">E-Mail: admin@example.com</Typography>
           <Typography variant="body2">Passwort: 1234</Typography>
         </Alert>
 
